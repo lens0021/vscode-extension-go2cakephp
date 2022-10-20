@@ -1,4 +1,14 @@
-out
-node_modules
-client/server
+
+.DS_Store
 .vscode-test
+*.db
+*.lsif
+*/.vs/
+*/node_modules/
+*/out/
+client/server
+node_modules
+npm-debug.log
+out
+Thumbs.db
+tsconfig.lsif.json
