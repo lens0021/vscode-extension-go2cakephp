@@ -10,11 +10,13 @@ import {
 	ProposedFeatures,
 	InitializeParams,
 	DidChangeConfigurationNotification,
+	DefinitionLink,
 	CompletionItem,
 	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+	DefinitionRequest
 } from 'vscode-languageserver/node';
 
 import {
@@ -55,7 +57,8 @@ connection.onInitialize((params: InitializeParams) => {
 			// Tell the client that this server supports code completion.
 			completionProvider: {
 				resolveProvider: true
-			}
+			},
+			definitionProvider: true,
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -184,6 +187,21 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 connection.onDidChangeWatchedFiles(_change => {
 	// Monitored files have change in VSCode
 	connection.console.log('We received an file change event');
+});
+
+connection.onDefinition((params): DefinitionLink[] => {
+	connection.console.log(params.toString());
+	return [
+		{
+			targetUri: params.textDocument.uri,
+			targetRange: { start: { line: 0, character: 2}, end: {line: 5, character: 45 } },
+			targetSelectionRange: { start: { line: 1, character: 5}, end: {line: 1, character: 10 } },
+			originSelectionRange: {
+				start: { line: params.position.line, character: Math.max(0, params.position.character - 4) },
+				end: { line: params.position.line, character: params.position.character + 4 }
+			}
+		},
+	];
 });
 
 // This handler provides the initial list of the completion items.
