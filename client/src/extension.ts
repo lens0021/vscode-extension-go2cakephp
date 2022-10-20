@@ -5,7 +5,6 @@
 
 import * as path from 'path';
 import { workspace, languages, ExtensionContext } from 'vscode';
-import { CakePhp2DefinitionProvider } from './CakePhp2DefinitionProvider';
 
 import {
 	LanguageClient,
@@ -22,9 +21,6 @@ export function activate(context: ExtensionContext) {
 		path.join('server', 'out', 'server.js')
 	);
 
-	context.subscriptions.push(
-		languages.registerDefinitionProvider(
-				'php', new CakePhp2DefinitionProvider()));
 	// The debug options for the server
 	// --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
 	const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
