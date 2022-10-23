@@ -5,6 +5,7 @@
 
 import * as path from 'path';
 import { workspace, languages, ExtensionContext } from 'vscode';
+import * as vscode from 'vscode';
 
 import {
 	LanguageClient,
@@ -20,6 +21,8 @@ export function activate(context: ExtensionContext) {
 	const serverModule = context.asAbsolutePath(
 		path.join('server', 'out', 'server.js')
 	);
+	// new (vscode.TextDocument()).getWordRangeAtPosition()
+	let foo: vscode.TextDocument;
 
 	// The debug options for the server
 	// --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
