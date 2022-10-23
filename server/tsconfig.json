@@ -9,7 +9,7 @@
 		"outDir": "out",
 		"rootDir": "src",
 		"noUnusedLocals": true,
-		"noUnusedParameters": true,
+		"noUnusedParameters": true
 	},
 	"include": ["src"],
 	"exclude": ["node_modules", ".vscode-test"]

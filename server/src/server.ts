@@ -22,7 +22,6 @@ const connection = createConnection(ProposedFeatures.all);
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 connection.onInitialize((_params: InitializeParams) => {
-
 	const result: InitializeResult = {
 		capabilities: {
 			// completionProvider: {
