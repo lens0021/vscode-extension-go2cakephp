@@ -1,18 +1,27 @@
 {
 	"name": "go2cakephp",
-	"description": "An implement of Go to definition for CakePHP 2's dynamic classes",
-	"author": "Lens0021 <lorentz0021@gmail.com>",
-	"license": "MIT",
-	"version": "0.1.0",
-	"repository": {
-		"type": "git",
-		"url": "httpshttps://github.com/lens0021/vscode-extension-go2cakephp"
+	"version": "0.1.1",
+	"publisher": "lens0021",
+	"engines": {
+		"vscode": "^1.63.0"
 	},
+	"license": "MIT",
+	"displayName": "Go 2 CakePHP",
+	"description": "An implement of 'Go to definition' for CakePHP 2's dynamic classes",
+	"categories": [
+		"Other"
+	],
 	"keywords": [
 		"CakePHP"
 	],
-	"engines": {
-		"vscode": "^1.63.0"
+	"author": "Lens0021 <lorentz0021@gmail.com>",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/lens0021/vscode-extension-go2cakephp.git"
+	},
+	"homepage": "https://github.com/lens0021/vscode-extension-go2cakephp",
+	"bugs": {
+		"url": "https://github.com/lens0021/vscode-extension-go2cakephp/issues"
 	},
 	"activationEvents": [
 		"onLanguage:php"
