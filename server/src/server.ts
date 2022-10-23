@@ -2,29 +2,22 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection,
 	TextDocuments,
-	Diagnostic,
-	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
-	DidChangeConfigurationNotification,
 	Definition,
 	DefinitionLink,
-	DefinitionParams,
 	CompletionItem,
 	CompletionItemKind,
 	TextDocumentPositionParams,
-	TextDocumentSyncKind,
 	InitializeResult,
-	DefinitionRequest,
 	Position,
 	integer,
 } from 'vscode-languageserver/node';
 import * as vscodeUri from 'vscode-uri';
-
-import { TextDocument } from 'vscode-languageserver-textdocument';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -211,10 +204,13 @@ connection.onDefinition(
 		const target = getWordRangeAtPosition(params.position, document);
 
 		let targetUri: string;
-		if (uses.indexOf(target)!=-1) {
+		if (uses.includes(target)) {
 			targetUri = file.replace(/(.+\/app)\/.+/, `$1/Model/${target}.php`);
-		} else if(components.indexOf(target)!=-1){
-			targetUri = file.replace(/(.+\/app)\/.+/, `$1/Controller/Component/${target}Component.php`);
+		} else if (components.includes(target)) {
+			targetUri = file.replace(
+				/(.+\/app)\/.+/,
+				`$1/Controller/Component/${target}Component.php`
+			);
 		} else {
 			return undefined;
 		}
@@ -223,14 +219,14 @@ connection.onDefinition(
 			{
 				targetUri: targetUri,
 				targetRange: {
-					start: {line: 0, character: 0},
-					end: {line: 0, character: 0},
+					start: { line: 0, character: 0 },
+					end: { line: 0, character: 0 },
 				},
 				targetSelectionRange: {
-					start: {line: 0, character: 0},
-					end: {line: 0, character: 0},
+					start: { line: 0, character: 0 },
+					end: { line: 0, character: 0 },
 				},
-			}
+			},
 		];
 	}
 );
@@ -249,13 +245,13 @@ function normalizeFsPath(fsPath: string): string {
 	return fsPath.replace(RE_PATHSEP_WINDOWS, '/');
 }
 
-function findDynamicClasses(text:string, property: string) {
+function findDynamicClasses(text: string, property: string) {
 	const regex = new RegExp(`\\$${property}.+=.+(?:array\\(|\\[)(.+)[)\\]].*;`, 'm');
 	const m = text.match(regex);
-	if (!m||!m[1]) {
+	if (!m || !m[1]) {
 		return [];
 	}
-	const cls = m[1].split(',').map((use:string) => {
+	const cls = m[1].split(',').map((use: string) => {
 		const m = use.match(/\s*['"](.+)['"]\s*/);
 		return m ? m[1] : use;
 	});
@@ -264,14 +260,14 @@ function findDynamicClasses(text:string, property: string) {
 
 function getWordRangeAtPosition(position: Position, document: TextDocument): string {
 	const line = document.getText({
-		start:{
+		start: {
 			line: position.line,
 			character: 0,
 		},
 		end: {
 			line: position.line + 1,
 			character: 0,
-		}
+		},
 	});
 
 	return getWordAt(line, position.character);
@@ -283,12 +279,12 @@ function getWordRangeAtPosition(position: Position, document: TextDocument): str
  * @param pos
  * @returns
  */
-function getWordAt (str: string, pos: integer): string {
+function getWordAt(str: string, pos: integer): string {
 	const left = str.slice(0, pos + 1).search(/[^\s()'">-]+$/),
-			right = str.slice(pos).search(/[\s()'">-]/);
+		right = str.slice(pos).search(/[\s()'">-]/);
 
 	if (right < 0) {
-			return str.slice(left);
+		return str.slice(left);
 	}
 
 	return str.slice(left, right + pos);
