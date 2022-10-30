@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v0.1.2
 
 - Go 2 CakePHP now searches components on `lib/Cake/Controller/Component/*Component.php` also. (https://github.com/lens0021/vscode-extension-go2cakephp/issues/8)
 
