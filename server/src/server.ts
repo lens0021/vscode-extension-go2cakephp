@@ -24,12 +24,15 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 connection.onInitialize((_params: InitializeParams) => {
 	const result: InitializeResult = {
 		capabilities: {
-			completionProvider: {
-				resolveProvider: COMPLETION_SUPPORT,
-			},
 			definitionProvider: true,
 		},
 	};
+
+	if (COMPLETION_SUPPORT) {
+		result.capabilities.completionProvider = {
+			resolveProvider: true,
+		};
+	}
 	return result;
 });
 
