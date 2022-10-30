@@ -12,3 +12,4 @@ npm-debug.log
 out
 Thumbs.db
 tsconfig.lsif.json
+coverage
