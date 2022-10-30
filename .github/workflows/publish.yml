@@ -3,7 +3,7 @@ name: publish
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 jobs:
   deploy:
@@ -15,8 +15,8 @@ jobs:
           node-version: 18
 
       - run: |
-        npm install --dev
-        npm ci
+          npm install --dev
+          npm ci
 
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v1
