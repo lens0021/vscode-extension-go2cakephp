@@ -2,6 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
+import * as cakephpParser from './cakephp-parser';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection,
@@ -38,10 +39,10 @@ connection.onInitialize((_params: InitializeParams) => {
 
 // connection.onInitialized(() => {});
 
-connection.onDidChangeWatchedFiles((_change) => {
-	// Monitored files have change in VSCode
-	connection.console.log('We received an file change event');
-});
+// connection.onDidChangeWatchedFiles((_change) => {
+// 	// Monitored files have change in VSCode
+// 	connection.console.log('We received an file change event');
+// });
 
 connection.onDefinition(
 	async (
