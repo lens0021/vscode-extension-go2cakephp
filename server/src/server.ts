@@ -12,6 +12,7 @@ import {
 	TextDocumentPositionParams,
 	InitializeResult,
 } from 'vscode-languageserver/node';
+// import { WorkspaceFolders } from 'vscode-languageserver/lib/common/workspaceFolders';
 
 const COMPLETION_SUPPORT = false;
 
@@ -46,7 +47,7 @@ connection.onDefinition(
 	): Promise<Definition | DefinitionLink[] | undefined> => {
 		const parser = new CakephpParser(documents);
 
-		return parser.onDefinition(params);
+		return await parser.onDefinition(params);
 	}
 );
 

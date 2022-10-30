@@ -1,6 +1,6 @@
 import { FileGetter } from '../file-getter';
 import { uriToPath } from '../protocol-translation';
-import * as fileParser from './file-parser';
+import { FileParser } from './file-parser';
 import { getWordRangeAtPosition } from './word-getter';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
@@ -12,15 +12,16 @@ import {
 export class CakephpParser {
 	public constructor(private documents: TextDocuments<TextDocument>) {}
 
-	public onDefinition(
+	public async onDefinition(
 		params: TextDocumentPositionParams
-	):
+	): Promise<
 		| Definition
 		| import('vscode-languageserver-types').LocationLink[]
 		| PromiseLike<
 				Definition | import('vscode-languageserver-types').LocationLink[] | undefined
 		  >
-		| undefined {
+		| undefined
+	> {
 		const file = uriToPath(params.textDocument.uri);
 		if (!file) {
 			return undefined;
@@ -30,17 +31,17 @@ export class CakephpParser {
 			return undefined;
 		}
 
-		const fileText = document.getText();
-		const { uses, components } = fileParser.findAllDynamicClasses(fileText);
-
+		const fileParser = new FileParser(document.getText());
 		const target = getWordRangeAtPosition(params.position, document);
 
 		const fileGetter = new FileGetter(file);
 		let targetUri: string;
-		if (uses.includes(target)) {
-			targetUri = fileGetter.getModel(target);
-		} else if (components.includes(target)) {
-			targetUri = fileGetter.getComponent(target);
+		if (fileParser.uses.includes(target)) {
+			targetUri = fileGetter.getModelUri(target);
+		} else if (fileParser.components.includes(target)) {
+			targetUri = fileGetter.getComponentUri(target);
+		} else if ((await fileGetter.findComponents()).includes(target)) {
+			targetUri = fileGetter.getCakeComponentUri(target);
 		} else {
 			return undefined;
 		}

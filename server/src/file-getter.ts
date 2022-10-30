@@ -1,14 +1,37 @@
-export class FileGetter {
-	public constructor(private file: string) {}
+import * as fs from 'fs';
+import { _, _RemoteWorkspace } from 'vscode-languageserver/node';
 
-	public getModel(name: string): string {
-		return this.file.replace(/(.+\/app)\/.+/, `$1/Model/${name}.php`);
+export class FileGetter {
+	public constructor(private openFile: string) {}
+
+	public getModelUri(name: string): string {
+		return this.openFile.replace(/(.+\/app)\/.+/, `$1/Model/${name}.php`);
 	}
 
-	public getComponent(name: string): string {
-		return this.file.replace(
+	public getComponentUri(name: string): string {
+		return this.openFile.replace(
 			/(.+\/app)\/.+/,
 			`$1/Controller/Component/${name}Component.php`
 		);
+	}
+
+	public getCakeComponentUri(name: string): string {
+		return this.openFile.replace(
+			/(.+)\/app\/.+/,
+			`$1/lib/Cake/Controller/Component/${name}Component.php`
+		);
+	}
+
+	public async findComponents(): Promise<string[]> {
+		const pathToCakeComponents = this.openFile.replace(
+			/(.+)\/app\/.+/,
+			`$1/lib/Cake/Controller/Component/`
+		);
+		try {
+			const dirs = await fs.promises.readdir(pathToCakeComponents);
+			return dirs.map((dir) => dir.replace('Component.php', ''));
+		} catch (e) {
+			return [];
+		}
 	}
 }
