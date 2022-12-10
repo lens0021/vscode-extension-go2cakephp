@@ -1,7 +1,7 @@
 import { FileGetter } from '../file-getter';
 import { uriToPath } from '../protocol-translation';
 import { FileParser } from './file-parser';
-import { getWordRangeAtPosition } from './word-getter';
+import { getTargetAtPosition, getClassAndFunctionAtFunctionPosition } from './word-getter';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	TextDocuments,
@@ -32,32 +32,46 @@ export class CakephpParser {
 		}
 
 		const fileParser = new FileParser(document.getText());
-		const target = getWordRangeAtPosition(params.position, document);
+		const target = getTargetAtPosition(params.position, document);
 
 		const fileGetter = new FileGetter(file);
 		let targetUri: string;
-		if (fileParser.uses.includes(target)) {
-			targetUri = fileGetter.getModelUri(target);
-		} else if (fileParser.components.includes(target)) {
-			targetUri = fileGetter.getComponentUri(target);
-		} else if ((await fileGetter.findComponents()).includes(target)) {
-			targetUri = fileGetter.getCakeComponentUri(target);
+		if (target.class === null ) {
+			return undefined;
+		}
+
+		if (fileParser.uses.includes(target.class)) {
+			targetUri = fileGetter.getModelUri(target.class);
+		} else if (fileParser.components.includes(target.class)) {
+			targetUri = fileGetter.getComponentUri(target.class);
+		} else if ((await fileGetter.findComponents()).includes(target.class)) {
+			targetUri = fileGetter.getCakeComponentUri(target.class);
 		} else {
 			return undefined;
 		}
 
-		return [
-			{
-				targetUri: targetUri,
-				targetRange: {
-					start: { line: 0, character: 0 },
-					end: { line: 0, character: 0 },
-				},
-				targetSelectionRange: {
-					start: { line: 0, character: 0 },
-					end: { line: 0, character: 0 },
-				},
+		const definition = {
+			targetUri: targetUri,
+			targetRange: {
+				start: { line: 0, character: 0 },
+				end: { line: 0, character: 0 },
 			},
-		];
+			targetSelectionRange: {
+				start: { line: 0, character: 0 },
+				end: { line: 0, character: 0 },
+			},
+		};
+		if (target.type === 'function') {
+			definition.targetRange = {
+				start: { line: 0, character: 0 },
+				end: { line: 0, character: 0 },
+			};
+			definition.targetSelectionRange = {
+				start: { line: 0, character: 0 },
+				end: { line: 0, character: 0 },
+			};
+		}
+
+		return [definition];
 	}
 }
