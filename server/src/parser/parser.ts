@@ -1,16 +1,21 @@
 import { FileGetter } from '../file-getter';
 import { uriToPath } from '../protocol-translation';
 import { FileParser } from './file-parser';
-import { getWordRangeAtPosition } from './word-getter';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import { getTargetAtPosition } from './word-getter';
+import { Range, TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	TextDocuments,
 	Definition,
 	TextDocumentPositionParams,
+	_Connection,
+	Location,
 } from 'vscode-languageserver/node';
 
 export class CakephpParser {
-	public constructor(private documents: TextDocuments<TextDocument>) {}
+	public constructor(
+		private connection: _Connection,
+		private documents: TextDocuments<TextDocument>
+	) {}
 
 	public async onDefinition(
 		params: TextDocumentPositionParams
@@ -22,42 +27,59 @@ export class CakephpParser {
 		  >
 		| undefined
 	> {
-		const file = uriToPath(params.textDocument.uri);
-		if (!file) {
+		const filePath = uriToPath(params.textDocument.uri);
+		if (!filePath) {
+			console.log(`The file for uri ${params.textDocument.uri} is not found`);
 			return undefined;
 		}
-		const document = this.documents.get(params.textDocument.uri);
-		if (document === undefined) {
+		const activeDoc = this.documents.get(params.textDocument.uri);
+		if (activeDoc === undefined) {
+			console.log(`Cannot find the active document ${activeDoc}`);
 			return undefined;
 		}
 
-		const fileParser = new FileParser(document.getText());
-		const target = getWordRangeAtPosition(params.position, document);
+		const activeDocParser = new FileParser(activeDoc.getText());
+		const target = getTargetAtPosition(params.position, activeDoc);
 
-		const fileGetter = new FileGetter(file);
-		let targetUri: string;
-		if (fileParser.uses.includes(target)) {
-			targetUri = fileGetter.getModelUri(target);
-		} else if (fileParser.components.includes(target)) {
-			targetUri = fileGetter.getComponentUri(target);
-		} else if ((await fileGetter.findComponents()).includes(target)) {
-			targetUri = fileGetter.getCakeComponentUri(target);
+		if (target.class === null) {
+			console.log(`Cannot find the class`);
+			return undefined;
+		}
+
+		const fileGetter = new FileGetter(filePath);
+		let defFileUri: string | null = null;
+		if (activeDocParser.uses.includes(target.class)) {
+			defFileUri = fileGetter.getModelUri(target.class);
+		} else if (activeDocParser.components.includes(target.class)) {
+			defFileUri = fileGetter.getComponentUri(target.class);
 		} else {
+			const comps = await fileGetter.findComponents();
+			if (comps.includes(target.class)) {
+				defFileUri = fileGetter.getCakeComponentUri(target.class);
+			}
+		}
+
+		if (defFileUri === null) {
+			console.log('defFileUri === null');
 			return undefined;
 		}
 
-		return [
-			{
-				targetUri: targetUri,
-				targetRange: {
-					start: { line: 0, character: 0 },
-					end: { line: 0, character: 0 },
-				},
-				targetSelectionRange: {
-					start: { line: 0, character: 0 },
-					end: { line: 0, character: 0 },
-				},
+		const definition: Location = {
+			uri: defFileUri,
+			range: {
+				start: { line: 0, character: 0 },
+				end: { line: 0, character: 0 },
 			},
-		];
+		};
+
+		const globPattern = FileGetter.uriToGlob(defFileUri);
+		const range: Range = await this.connection.sendRequest('getDefinitionOnFile', {
+			target,
+			globPattern,
+		});
+
+		definition.range = range;
+
+		return definition;
 	}
 }

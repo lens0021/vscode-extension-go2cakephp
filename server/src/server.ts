@@ -45,7 +45,7 @@ connection.onDefinition(
 	async (
 		params: TextDocumentPositionParams
 	): Promise<Definition | DefinitionLink[] | undefined> => {
-		const parser = new CakephpParser(documents);
+		const parser = new CakephpParser(connection, documents);
 
 		return await parser.onDefinition(params);
 	}
