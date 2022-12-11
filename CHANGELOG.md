@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.0
+
+- Go 2 CakePHP now works for functions.
+
 ## v0.1.2
 
 - Go 2 CakePHP now searches components on `lib/Cake/Controller/Component/*Component.php` also. (https://github.com/lens0021/vscode-extension-go2cakephp/issues/8)

@@ -1,6 +1,6 @@
 {
 	"name": "go2cakephp",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"publisher": "lens0021",
 	"engines": {
 		"vscode": "^1.63.0"
