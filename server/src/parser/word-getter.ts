@@ -15,36 +15,31 @@ export function getTargetAtPosition(position: Position, document: TextDocument) 
 	});
 
 	return getClassAndFunctionAtFunctionPosition(line, position.character);
-
-	// if (_class === null) {
-	// 	return {
-	// 		class: null,
-	// 		function: func,
-	// 	};
-	// }
-	// const { left, right, word } = getWordAt(line, position.character);
-	// if (line.slice(left - 2, left) == '->' && line.at(right) == '(') {
-	// 	return {
-	// 		class: getWordAt(line, left - 3).word,
-	// 		function: word,
-	// 	};
-	// }
-	// const _class = word;
-	// return {
-	// 	class: _class,
-	// 	function: '',
-	// };
 }
 
-export function getClassAndFunctionAtFunctionPosition(str: string, pos: integer) {
-	const left = str.slice(0, pos + 1);
-	const found = left.match(/\$this->([A-Z][^-]+)->/);
+export function getClassAndFunctionAtFunctionPosition(line: string, pos: integer) {
+	const word = getWordAt(line, pos).word;
 
+	const cls = getClassFromLineAndPosition(line, pos);
 	// TODO: Cover static functions
+	const func = word == cls ? null : word;
+
 	return {
-		class: found && found[1] ? found[1] : null,
-		function: getWordAt(str, pos).word,
+		class: cls,
+		function: func,
 	};
+}
+
+export function getClassFromLineAndPosition(line: string, pos: integer) {
+	const reg = RegExp(/\$this->([A-Z][^-]*)->[^(]+/, 'g');
+	let found;
+	while ((found = reg.exec(line)) !== null) {
+		if (found && found[1] && found.index < pos && pos <= reg.lastIndex) {
+			return found[1];
+		}
+	}
+
+	return null;
 }
 
 /**
