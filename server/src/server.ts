@@ -12,6 +12,7 @@ import {
 	TextDocumentPositionParams,
 	InitializeResult,
 } from 'vscode-languageserver/node';
+
 // import { WorkspaceFolders } from 'vscode-languageserver/lib/common/workspaceFolders';
 
 const COMPLETION_SUPPORT = false;
