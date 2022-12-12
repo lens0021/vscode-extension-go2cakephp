@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.1
+
+- Update package-lock.json.
+
 ## v0.2.0
 
 - Go 2 CakePHP now works for functions.
